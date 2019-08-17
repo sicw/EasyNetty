@@ -11,7 +11,7 @@ import java.net.Socket;
  */
 public class EasyClient {
     public static void main(String[] args) throws IOException {
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 3; i++) {
             //创建socket
             Socket client = new Socket("127.0.0.1", 10086);
             //write
