@@ -11,9 +11,16 @@ import java.util.Set;
 
 public class NioLoopExecutor extends Thread {
 
+    private String name;
+
     private Selector selector;
 
-    public NioLoopExecutor() {
+    public NioLoopExecutor(){
+        this("default-work-executor");
+    }
+
+    public NioLoopExecutor(String name) {
+        this.name = name;
         try {
             init();
         } catch (IOException e) {
@@ -38,6 +45,7 @@ public class NioLoopExecutor extends Thread {
                 if (readyChannels == 0) {
                     continue;
                 }
+                System.out.println("NettyServer: " + name);
                 Set<SelectionKey> selectedKeys = selector.selectedKeys();
                 Iterator<SelectionKey> ite = selectedKeys.iterator();
                 while (ite.hasNext()) {
