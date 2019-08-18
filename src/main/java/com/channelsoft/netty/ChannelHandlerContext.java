@@ -15,13 +15,15 @@ public class ChannelHandlerContext {
         return null;
     }
 
-    public Object fireChannelRead(){
+    public ChannelHandlerContext fireChannelRead(Object msg){
         ChannelHandlerContext next = findContextInbound();
-        return next.invokeChannelRead();
+        next.invokeChannelRead(msg);
+        return this;
     }
 
-    public Object invokeChannelRead(){
-        return null;
+    public void invokeChannelRead(Object msg){
+        ChannelInboundHandler inboundHandler = (ChannelInboundHandler) channelHandler;
+        inboundHandler.channelRead(this,msg);
     }
 
 
