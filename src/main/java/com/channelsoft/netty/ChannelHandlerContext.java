@@ -10,11 +10,12 @@ public class ChannelHandlerContext {
     private boolean inbound;
     private boolean outbound;
 
+    // TODO 如果为空怎么办
     private ChannelHandlerContext findContextInbound(){
         ChannelHandlerContext ctx = this;
         do {
             ctx = ctx.next;
-        } while (!ctx.inbound);
+        } while (ctx != null && !ctx.inbound);
         return ctx;
     }
 
@@ -24,7 +25,9 @@ public class ChannelHandlerContext {
 
     public ChannelHandlerContext fireChannelRead(Object msg){
         ChannelHandlerContext next = findContextInbound();
-        next.invokeChannelRead(msg);
+        if (next != null) {
+            next.invokeChannelRead(msg);
+        }
         return this;
     }
 

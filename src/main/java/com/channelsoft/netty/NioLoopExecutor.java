@@ -7,6 +7,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 public class NioLoopExecutor extends Thread {
@@ -15,12 +16,15 @@ public class NioLoopExecutor extends Thread {
 
     private Selector selector;
 
+    private ChannelHandlerContext handlerContext;
+
     public NioLoopExecutor(){
-        this("default-work-executor");
+        this("default-work-executor",null);
     }
 
-    public NioLoopExecutor(String name) {
+    public NioLoopExecutor(String name, List<ChannelHandler> listHandler) {
         this.name = name;
+        this.handlerContext = buildHandlerChain(listHandler);
         try {
             init();
         } catch (IOException e) {
@@ -30,6 +34,28 @@ public class NioLoopExecutor extends Thread {
 
     private void init() throws IOException {
         selector = Selector.open();
+    }
+
+    private ChannelHandlerContext buildHandlerChain(List<ChannelHandler> listHandlers){
+        ChannelHandlerContext header = null;
+        ChannelHandlerContext prevHandlerConext = null;
+        for (ChannelHandler currentHandler : listHandlers) {
+            ChannelHandlerContext context = new ChannelHandlerContext();
+            context.setPrev(prevHandlerConext);
+            context.setChannelHandler(currentHandler);
+            if (currentHandler instanceof ChannelInboundHandler){
+                context.setInbound(true);
+                context.setOutbound(false);
+            }
+            if (prevHandlerConext != null) {
+                prevHandlerConext.setNext(context);
+            }
+            if(header == null){
+                header = context;
+            }
+            prevHandlerConext = context;
+        }
+        return header;
     }
 
     public void registryChannel(SocketChannel client,int opt,Object att) throws ClosedChannelException {
@@ -68,14 +94,17 @@ public class NioLoopExecutor extends Thread {
                                 System.out.println("client has been closed...");
                             }
                         } else {
-                            try {
-                                buff.flip();
-                                if (clientChannel.write(buff) <= 0) {
-                                    System.out.println("send data faild");
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
+                            if(handlerContext != null){
+                                handlerContext.invokeChannelRead(buff);
                             }
+//                            try {
+//                                buff.flip();
+//                                if (clientChannel.write(buff) <= 0) {
+//                                    System.out.println("send data faild");
+//                                }
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
                         }
                     } else if (ky.isWritable()) {
                         System.out.println("is Writeable");
