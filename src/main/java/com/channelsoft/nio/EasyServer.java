@@ -1,4 +1,4 @@
-package com.channelsoft;
+package com.channelsoft.nio;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;

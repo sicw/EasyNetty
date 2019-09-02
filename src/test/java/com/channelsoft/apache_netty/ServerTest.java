@@ -1,4 +1,4 @@
-package com.channelsoft;
+package com.channelsoft.apache_netty;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;

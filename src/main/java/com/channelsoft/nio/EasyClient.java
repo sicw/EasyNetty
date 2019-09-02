@@ -1,4 +1,4 @@
-package com.channelsoft;
+package com.channelsoft.nio;
 
 import java.io.IOException;
 import java.io.InputStream;
