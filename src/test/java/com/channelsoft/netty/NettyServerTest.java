@@ -1,7 +1,6 @@
 package com.channelsoft.netty;
 
 import org.junit.Test;
-import sun.java2d.pipe.SpanShapeRenderer;
 
 import java.io.IOException;
 import java.util.ArrayList;
